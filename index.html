@@ -1,72 +1,138 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8"><title>Swiftss Lab — SciensPlay Hub</title>
-    <style>
-        body,html{margin:0;padding:0;background:#050508;color:#0f6;font-family:monospace;user-select:none;scroll-behavior:smooth;}
-        .wrap{max-width:700px;margin:0 auto;padding:40px 20px;position:relative;}
-        h1{color:#ff5500;text-shadow:0 0 10px rgba(255,85,0,0.5);font-size:24px;letter-spacing:2px;text-align:center;margin-bottom:5px;}
-        h2{color:#3366ff;font-size:16px;border-bottom:2px solid #3366ff;padding-bottom:5px;margin-top:30px;text-transform:uppercase;}
-        .box{background:rgba(10,10,20,0.9);border:2px solid #0f6;border-radius:6px;padding:20px;margin-top:15px;box-shadow:0 0 15px rgba(0,255,102,0.15);}
-        p{font-size:13px;line-height:1.6;color:#ccc;}
-        .orange{color:#ff5500;font-weight:bold;}
-        .dl-btn{display:inline-block;background:#ff5500;color:#000;padding:15px 30px;border:none;border-radius:6px;font-weight:bold;font-size:15px;cursor:pointer;transition:0.2s;text-decoration:none;letter-spacing:1px;}
-        .dl-btn:hover{background:#ff7733;box-shadow:0 0 15px #ff5500;transform:scale(1.03);}
-        
-        /* ТОТ САМЫЙ КРУТОЙ ВОПРОСИТЕЛЬНЫЙ ЗНАЧОК СВИФТСА */
-        .info-btn{position:absolute;top:40px;right:20px;background:#0ff;color:#000;width:30px;height:30px;border-radius:50%;border:none;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 0 10px #0ff;transition:0.2s;text-align:center;line-height:30px;}
-        .info-btn:hover{background:#fff;box-shadow:0 0 15px #fff;transform:scale(1.1);}
-        #sci-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,10,20,0.98);border:2px solid #0ff;border-radius:8px;padding:25px;width:450px;z-index:100;box-shadow:0 0 25px rgba(0,255,255,0.4);color:#fff;}
-        .close-btn{background:#f33;color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;float:right;font-weight:bold;}
-    </style>
-</head>
-<body>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Swiftss Lab — SciensPlay Web</title>
+<style>
+    body,html{margin:0;padding:0;background:#050508;color:#0f6;font-family:monospace;user-select:none;scroll-behavior:smooth;height:100%;}
+    .wrap{max-width:900px;margin:0 auto;padding:20px;position:relative;display:flex;flex-direction:column;height:calc(100% - 40px);}
+    h1{color:#ff5500;text-shadow:0 0 10px rgba(255,85,0,0.5);font-size:22px;letter-spacing:2px;text-align:center;margin:0 0 5px 0;}
+    h2{color:#3366ff;font-size:14px;border-bottom:2px solid #3366ff;padding-bottom:5px;margin:15px 0 5px 0;text-transform:uppercase;}
+    .box{background:rgba(10,10,20,0.9);border:2px solid #0f6;border-radius:6px;padding:12px;margin-top:5px;box-shadow:0 0 15px rgba(0,255,102,0.15);}
+    p{font-size:12px;line-height:1.5;color:#ccc;margin:4px 0;} .orange{color:#ff5500;font-weight:bold;}
+    #canvas-container{position:relative;width:100%;height:450px;margin-top:10px;border:3px solid #ff5500;border-radius:8px;box-shadow:0 0 20px rgba(255,85,0,0.2);background:#fff;overflow:hidden;}
+    canvas{display:block;width:100%;height:100%;}
+    #d{position:absolute;top:10px;right:10px;color:#0ff;background:rgba(0,5,15,0.95);padding:12px;border:2px solid #0ff;border-radius:6px;z-index:100;width:240px;display:none;font-size:11px;}
+    .info-btn{position:absolute;top:20px;right:20px;background:#0ff;color:#000;width:30px;height:30px;border-radius:50%;border:none;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 0 10px #0ff;text-align:center;line-height:30px;z-index:110;}
+    #sci-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,10,20,0.98);border:2px solid #0ff;border-radius:8px;padding:20px;width:420px;z-index:200;box-shadow:0 0 25px rgba(0,255,255,0.4);color:#fff;}
+    .close-btn{background:#f33;color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;float:right;font-weight:bold;}
+    .hud-left{font-size:11px;color:#fff;background:rgba(0,0,0,0.85);padding:8px;border-radius:4px;border:1px solid #3366ff;margin-top:5px;}
+</style></head><body>
     <div class="wrap">
-        <!-- КНОПКА ВОПРОСА ДЛЯ ИЗУЧЕНИЯ ТЕМЫ -->
         <button class="info-btn" onclick="openSciInfo()">?</button>
-
-        <h1>SWIFTSS_SCIENSPLAY_v1.0</h1>
-        <p style="text-align:center;color:#888;font-size:11px;">🏆 ЭКОСИСТЕМА SCIENCEBOX — ТЕМА: БИОЛОГИЯ И МИТОЗ 🏆</p>
-
-        <h2>🍊 ОПИСАНИЕ ИГРЫ</h2>
-        <div class="box" style="border-color:#ff5500;box-shadow:0 0 15px rgba(255,85,0,0.15);">
-            <p>> <span class="orange">SciensPlay</span> — это категория обучающих интерактивных симуляторов. Этот модуль посвящён изучению одноклеточных кошачьих организмов под объективом микроскопа!</p>
+        <h1>SWIFTSS_SCIENSPLAY_PLATFORM</h1>
+        <p style="text-align:center;color:#888;font-size:10px;margin:0;">🏆 ИНТЕРАКТИВНАЯ ОНЛАЙН-ЛАБОРАТОРИЯ SCIENCEBOX 🏆</p>
+        <div id="canvas-container">
+            <div id="d">
+                <h1 style="color:#0ff;text-align:center;margin-bottom:5px;font-size:12px;">🧬 CELL_DNA_DECODER</h1>
+                <p>КOТ_ID: <span id="d1" style="color:#fff;">0</span></p>
+                <p>ЖГУТИК: <span id="d2" style="color:#0f6;">0</span></p>
+                <p>ШЁРСТЬ: <span id="d3" style="color:#f90;">0</span></p>
+            </div>
+            <canvas id="c"></canvas>
         </div>
-
-        <h2>💾 ЗАПУСТИТЬ ОФИЦИАЛЬНЫЙ РЕЛИЗ</h2>
-        <div class="box" style="border-color:#ff5500; text-align:center; box-shadow:0 0 15px rgba(255,85,0,0.15);">
-            <p style="margin-bottom:20px; color:#fff; font-weight:bold; font-size:14px;">SciensPlay: Cat Microbes v9.0 (WASD + Bibites tracking)</p>
-            <a href="game.html" download="game.html" class="dl-btn">📥 ЗАЙТИ В ПОСЛЕДНЮЮ ВЕРСИЮ (v9.0)</a>
+        <div class="hud-left">
+            <span style="color:#ff5500;font-weight:bold;">УПРАВЛЕНИЕ:</span> [W],[A],[S],[D] — Полёт камеры 🚀 │ [M] — Зум Микроскопа x15 🔬 │ [ПКМ] по коту — Слежка камеры (Зажми [TAB] для ДНК!) 🎥 │ — Спавн клоуна 🤡 │ — Спавн котёнка 🐱🦠 │ [ЛКМ] — Хватить левым кулаком ✊ │ [R] — Сброс лабы
         </div>
-
-        <h2>🛠️ ОФИЦИАЛЬНЫЙ МАНУАЛ ПО УПРАВЛЕНИЮ</h2>
-        <div class="box">
-            <ul style="padding-left:20px; list-style-type: square; color:#ccc;">
-                <li><span class="orange">[W], [A], [S], [D]</span> — Свободный полёт камеры микроскопа 🚀</li>
-                <li><span class="orange">[M]</span> — Включить/выключить 100х ЗУМ линзы микроскопа 🔬</li>
-                <li><span class="orange">[ПКМ]</span> — Намертво зафиксировать слежку за выбранным существом 🎥</li>
-                <li><span class="orange">[TAB] (Зажать)</span> — Вызвать хакерскую ДНК-панель генома кошачьей клетки 📊</li>
-            </ul>
+        <h2>🍊 НАУЧНЫЙ МАНИФЕСТ ИГРЫ</h2>
+        <div class="box" style="border-color:#ff5500;box-shadow:0 0 10px rgba(255,85,0,0.1);">
+            <p>> Этот модуль доказывает, что школьные темы можно изучать весело. Кенты из 6-го класса могут наглядно исследовать клеточный митоз и передачу мутаций ДНК в реальном времени на стабильных <span class="orange">120 FPS</span>!</p>
         </div>
     </div>
-
-    <!-- ТАКТИЧЕСКОЕ ОКНО С ОБЪЯСНЕНИЕМ ТЕМЫ ДЛЯ УЧИТЕЛЯ И УЧЕНИКОВ -->
-    <div id="sci-popup">
-        <button class="close-btn" onclick="closeSciInfo()">X</button>
-        <h3 style="color:#0ff;margin-top:0;font-size:15px;">🔬 НАУЧНАЯ СПРАВКА: КЛЕТОЧНЫЙ МИТОЗ</h3>
-        <p style="font-size:12px;color:#ccc;line-height:1.5;margin-top:15px;">
-            > <span style="color:#0ff;font-weight:bold;">Что происходит на экране?</span><br>
-            В этой симуляции искусственной жизни организмы поглощают питательную биомассу (зелёные бактерии). Полученная энергия трансформируется в генетический ДНК-код.
-        </p>
-        <p style="font-size:12px;color:#ccc;line-height:1.5;">
-            > <span style="color:#0f6;font-weight:bold;">Биологический процесс:</span><br>
-            Когда клетка накапливает 100% ДНК, запускается **митоз** — бесполое размножение. Клетка увеличивается, вытягивается в овал и делится на два самостоятельных дочерних организма, передавая им свои мутационные гены цвета и пушистости.
-        </p>
+    <div id="sci-popup"><button class="close-btn" onclick="closeSciInfo()">X</button>
+        <h3 style="color:#0ff;margin-top:0;font-size:14px;">🔬 НАУЧНАЯ СПРАВКА: КЛЕТОЧНЫЙ МИТОЗ</h3>
+        <p style="font-size:12px;color:#ccc;line-height:1.5;margin-top:10px;">> <span style="color:#0ff;font-weight:bold;">Процесс на холсте:</span> Цифровые кошачьи микробы поглощают фито-бактерии и копят ДНК-код. При 100% заполнении шкалы запускается **митоз** — деление клетки надвое с мутацией пушистости и цвета шерсти!</p>
     </div>
-
     <script>
-        function openSciInfo() { document.getElementById('sci-popup').style.display = 'block'; }
-        function closeSciInfo() { document.getElementById('sci-popup').style.display = 'none'; }
+        function openSciInfo(){document.getElementById('sci-popup').style.display='block';}
+        function closeSciInfo(){document.getElementById('sci-popup').style.display='none';}
+        const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');let floorY=400;
+        canvas.width=860; canvas.height=450; window.addEventListener('contextmenu',e=>e.preventDefault());
+        let mx=0,my=0,wTime=0,timeScale=1,isSlow=false,zoom=1,hasMicroscope=false,isTabPressed=false;
+        let sSegments=[], food=[], trackedPuz=null, keys={};let pE=['😎','🙂','🤖','😐','🤮'], pSkinIdx=0;
+        let player={x:300,y:200,r:20,lH:{x:0,y:0,fist:false,ang:0},rH:{x:0,y:0,fist:false,ang:0}};
+        function spawnObj(type) {
+            let emo = type===4?'🤡':'🐱🦠';
+            sSegments.push({x:Math.random()*400+200,y:Math.random()*200+100,ox:200,oy:100,vx:0,vy:0,type:type,emoji:emo,grab:'N',r:type===4?18:10,hp:100,id:Date.now()+Math.random(),furDensity:Math.floor(Math.random()*40)+60});
+        }
+        for(let i=0;i<6;i++) spawnObj(7);
+        for(let i=0;i<30;i++) food.push({x:Math.random()*1600-800, y:Math.random()*1600-800, r:3});
+        canvas.addEventListener('mousemove',e=>{
+            let rect = canvas.getBoundingClientRect(); let rawX = e.clientX - rect.left; let rawY = e.clientY - rect.top;
+            if(hasMicroscope) { mx = (rawX - canvas.width/2)/0.15 + player.x; my = (rawY - canvas.height/2)/0.15 + player.y; } else { mx = rawX; my = rawY; }
+        });
+        canvas.addEventListener('mousedown',e=>{if(e.button===0) player.lH.fist=true; if(e.button===2){let found = sSegments.find(s=>Math.sqrt((s.x-mx)**2+(s.y-my)**2)<s.r+25);if(found){trackedPuz=found;}else{trackedPuz=null;document.getElementById('d').style.display='none';}}});
+        canvas.addEventListener('mouseup',e=>{if(e.button===0){player.lH.fist=false;sSegments.forEach(s=>{s.grab='N';});}});
+        window.addEventListener('keydown',e=>{
+            let key=e.key.toLowerCase(); keys[key]=true; if(e.key==='Tab'){e.preventDefault(); isTabPressed=true;}
+            if(key==='4')spawnObj(4); if(key==='7')spawnObj(7); if(key==='e'||key==='у'){pSkinIdx=(pSkinIdx+1)%pEmojis.length;} if(key==='q'||key==='й'){isSlow=!isSlow;}
+            if(key==='m'||key==='ь'){hasMicroscope=!hasMicroscope; zoom=hasMicroscope?0.15:1.0;}
+            if(key==='r'||key==='к'){sSegments=[];trackedPuz=null;for(let i=0;i<6;i++) spawnObj(7);}
+        });
+        window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false; if(e.key==='Tab'){isTabPressed=false;document.getElementById('d').style.display='none';}});
+        function limH(b,h,tx,ty){let dx=tx-b.x,dy=ty-b.y,dist=Math.sqrt(dx*dx+dy*dy),mR=60;if(dist>mR){h.x=b.x+(dx/dist)*mR;h.y=b.y+(dy/dist)*mR;}else{h.x=tx;h.y=ty;}}
+        function loop() {
+            timeScale = isSlow ? 0.25 : 1.0; wTime += 0.05 * timeScale;
+            if(food.length<40 && Math.random()>0.95) food.push({x:Math.random()*1600-800, y:Math.random()*1600-800, r:3});
+
+            let fS = 5 * timeScale;
+            if (keys['w']||keys['ц']) player.y -= fS; if (keys['s']||keys['ы']) player.y += fS;
+            if (keys['a']||keys['ф']) player.x -= fS; if (keys['d']||keys['в']) player.x += fS;
+
+            if(trackedPuz) {
+                player.x += (trackedPuz.x - player.x) * 0.1; player.y += (trackedPuz.y - player.y) * 0.1;
+                if(isTabPressed) {
+                    let panel = document.getElementById('d'); panel.style.display = 'block';
+                    document.getElementById('d1').innerText = "ID_" + Math.floor(trackedPuz.id%1000);
+                    document.getElementById('d2').innerText = Math.abs(trackedPuz.vx).toFixed(2) + " усов/к";
+                    document.getElementById('d3').innerText = trackedPuz.furDensity + "% Мягкости";
+                }
+            }
+
+            let tLX=player.lH.fist?mx:player.x-35, tLY=player.lH.fist?my:player.y+10;
+            limH(player,player.lH,tLX,tLY); limH(player,player.rH,mx,my);
+
+            sSegments.forEach(s => {
+                if (s.grab === 'N' && player.lH.fist && Math.sqrt((player.lH.x - s.x)**2 + (player.lH.y - s.y)**2) < 25) s.grab = 'L';
+            });
+
+            sSegments.forEach((s, idx) => {
+                if (s.grab === 'L') { s.x = player.lH.x; s.y = player.lH.y; s.vx = s.x - s.ox; s.vy = s.y - s.oy; s.ox = s.x; s.oy = s.y; }
+                else {
+                    let vx = (s.x - s.ox) * 0.95, vy = (s.y - s.oy) * 0.95; s.ox = s.x; s.oy = s.y;
+                    s.x += vx * timeScale; s.y += (vy + 0.35) * timeScale;
+                    if (s.y > floorY + 200) { s.y = floorY + 200; s.oy = s.y; }
+                    if (s.type===7 && Math.random()>0.96) { s.vx += (Math.random()-0.5)*1.5; s.vy += (Math.random()-0.5)*1.5; }
+                    
+                    for(let i=food.length-1; i>=0; i--) {
+                        if(Math.sqrt((s.x-food[i].x)**2 + (food[i].y-s.y)**2) < s.r + 6) { food.splice(i, 1); s.hp += 8; }
+                    }
+                    
+                    if(s.type===7 && s.hp >= 140) {
+                        s.hp = 100;
+                        sSegments.push({x:s.x+20,y:s.y+20,ox:s.x,oy:s.y,vx:-s.vx,vy:-s.vy,type:7,emoji:'🐱🦠',grab:'N',r:10,hp:100,id:Date.now()+Math.random(),furDensity:Math.floor(Math.random()*40)+60});
+                    }
+                }
+            });
+
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            if(hasMicroscope) { ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(0.15, 0.15); ctx.translate(-player.x, -player.y); }
+
+            ctx.strokeStyle = "#eeeeee"; ctx.lineWidth = 2;
+            for(let i = -canvas.width; i < canvas.width*3; i += 40) { ctx.beginPath(); ctx.moveTo(i, -canvas.height*2); ctx.lineTo(i, canvas.height*3); ctx.stroke(); }
+
+            ctx.fillStyle = "#44ff44"; food.forEach(f => { ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill(); });
+
+            ctx.font = "24px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            sSegments.forEach(it => { ctx.save(); ctx.translate(it.x, it.y); ctx.fillText(it.emoji, 0, 0); ctx.restore(); });
+
+            ctx.save(); ctx.font = "42px sans-serif"; ctx.fillText(pE[pSkinIdx], player.x, player.y); ctx.restore();
+
+            player.lH.ang = Math.atan2(player.lH.y - player.y, player.lH.x - player.x);
+            ctx.font = "22px sans-serif"; ctx.save(); ctx.translate(player.lH.x, player.lH.y); ctx.rotate(player.lH.ang); ctx.fillText(player.lH.fist?"✊":"✋",0,0); ctx.restore();
+            ctx.save(); ctx.translate(mx, my); ctx.fillText("✋", 0, 0); ctx.restore();
+
+            ctx.restore();
+            requestAnimationFrame(loop);
+        }
+        loop();
     </script>
 </body>
 </html>
