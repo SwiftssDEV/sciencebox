@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"><title>Swiftss Lab — SciensPlay Hub</title>
+    <style>
+        body,html{margin:0;padding:0;background:#050508;color:#0f6;font-family:monospace;user-select:none;scroll-behavior:smooth;}
+        .wrap{max-width:700px;margin:0 auto;padding:40px 20px;position:relative;}
+        h1{color:#ff5500;text-shadow:0 0 10px rgba(255,85,0,0.5);font-size:24px;letter-spacing:2px;text-align:center;margin-bottom:5px;}
+        h2{color:#3366ff;font-size:16px;border-bottom:2px solid #3366ff;padding-bottom:5px;margin-top:30px;text-transform:uppercase;}
+        .box{background:rgba(10,10,20,0.9);border:2px solid #0f6;border-radius:6px;padding:20px;margin-top:15px;box-shadow:0 0 15px rgba(0,255,102,0.15);}
+        p{font-size:13px;line-height:1.6;color:#ccc;}
+        .orange{color:#ff5500;font-weight:bold;}
+        .dl-btn{display:inline-block;background:#ff5500;color:#000;padding:15px 30px;border:none;border-radius:6px;font-weight:bold;font-size:15px;cursor:pointer;transition:0.2s;text-decoration:none;letter-spacing:1px;}
+        .dl-btn:hover{background:#ff7733;box-shadow:0 0 15px #ff5500;transform:scale(1.03);}
+        
+        /* ТОТ САМЫЙ КРУТОЙ ВОПРОСИТЕЛЬНЫЙ ЗНАЧОК СВИФТСА */
+        .info-btn{position:absolute;top:40px;right:20px;background:#0ff;color:#000;width:30px;height:30px;border-radius:50%;border:none;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 0 10px #0ff;transition:0.2s;text-align:center;line-height:30px;}
+        .info-btn:hover{background:#fff;box-shadow:0 0 15px #fff;transform:scale(1.1);}
+        #sci-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,10,20,0.98);border:2px solid #0ff;border-radius:8px;padding:25px;width:450px;z-index:100;box-shadow:0 0 25px rgba(0,255,255,0.4);color:#fff;}
+        .close-btn{background:#f33;color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;float:right;font-weight:bold;}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <!-- КНОПКА ВОПРОСА ДЛЯ ИЗУЧЕНИЯ ТЕМЫ -->
+        <button class="info-btn" onclick="openSciInfo()">?</button>
+
+        <h1>SWIFTSS_SCIENSPLAY_v1.0</h1>
+        <p style="text-align:center;color:#888;font-size:11px;">🏆 ЭКОСИСТЕМА SCIENCEBOX — ТЕМА: БИОЛОГИЯ И МИТОЗ 🏆</p>
+
+        <h2>🍊 ОПИСАНИЕ ИГРЫ</h2>
+        <div class="box" style="border-color:#ff5500;box-shadow:0 0 15px rgba(255,85,0,0.15);">
+            <p>> <span class="orange">SciensPlay</span> — это категория обучающих интерактивных симуляторов. Этот модуль посвящён изучению одноклеточных кошачьих организмов под объективом микроскопа!</p>
+        </div>
+
+        <h2>💾 ЗАПУСТИТЬ ОФИЦИАЛЬНЫЙ РЕЛИЗ</h2>
+        <div class="box" style="border-color:#ff5500; text-align:center; box-shadow:0 0 15px rgba(255,85,0,0.15);">
+            <p style="margin-bottom:20px; color:#fff; font-weight:bold; font-size:14px;">SciensPlay: Cat Microbes v9.0 (WASD + Bibites tracking)</p>
+            <a href="game.html" download="game.html" class="dl-btn">📥 ЗАЙТИ В ПОСЛЕДНЮЮ ВЕРСИЮ (v9.0)</a>
+        </div>
+
+        <h2>🛠️ ОФИЦИАЛЬНЫЙ МАНУАЛ ПО УПРАВЛЕНИЮ</h2>
+        <div class="box">
+            <ul style="padding-left:20px; list-style-type: square; color:#ccc;">
+                <li><span class="orange">[W], [A], [S], [D]</span> — Свободный полёт камеры микроскопа 🚀</li>
+                <li><span class="orange">[M]</span> — Включить/выключить 100х ЗУМ линзы микроскопа 🔬</li>
+                <li><span class="orange">[ПКМ]</span> — Намертво зафиксировать слежку за выбранным существом 🎥</li>
+                <li><span class="orange">[TAB] (Зажать)</span> — Вызвать хакерскую ДНК-панель генома кошачьей клетки 📊</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ТАКТИЧЕСКОЕ ОКНО С ОБЪЯСНЕНИЕМ ТЕМЫ ДЛЯ УЧИТЕЛЯ И УЧЕНИКОВ -->
+    <div id="sci-popup">
+        <button class="close-btn" onclick="closeSciInfo()">X</button>
+        <h3 style="color:#0ff;margin-top:0;font-size:15px;">🔬 НАУЧНАЯ СПРАВКА: КЛЕТОЧНЫЙ МИТОЗ</h3>
+        <p style="font-size:12px;color:#ccc;line-height:1.5;margin-top:15px;">
+            > <span style="color:#0ff;font-weight:bold;">Что происходит на экране?</span><br>
+            В этой симуляции искусственной жизни организмы поглощают питательную биомассу (зелёные бактерии). Полученная энергия трансформируется в генетический ДНК-код.
+        </p>
+        <p style="font-size:12px;color:#ccc;line-height:1.5;">
+            > <span style="color:#0f6;font-weight:bold;">Биологический процесс:</span><br>
+            Когда клетка накапливает 100% ДНК, запускается **митоз** — бесполое размножение. Клетка увеличивается, вытягивается в овал и делится на два самостоятельных дочерних организма, передавая им свои мутационные гены цвета и пушистости.
+        </p>
+    </div>
+
+    <script>
+        function openSciInfo() { document.getElementById('sci-popup').style.display = 'block'; }
+        function closeSciInfo() { document.getElementById('sci-popup').style.display = 'none'; }
+    </script>
+</body>
+</html>
