@@ -1,138 +1,255 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Swiftss Lab — SciensPlay Web</title>
-<style>
-    body,html{margin:0;padding:0;background:#050508;color:#0f6;font-family:monospace;user-select:none;scroll-behavior:smooth;height:100%;}
-    .wrap{max-width:900px;margin:0 auto;padding:20px;position:relative;display:flex;flex-direction:column;height:calc(100% - 40px);}
-    h1{color:#ff5500;text-shadow:0 0 10px rgba(255,85,0,0.5);font-size:22px;letter-spacing:2px;text-align:center;margin:0 0 5px 0;}
-    h2{color:#3366ff;font-size:14px;border-bottom:2px solid #3366ff;padding-bottom:5px;margin:15px 0 5px 0;text-transform:uppercase;}
-    .box{background:rgba(10,10,20,0.9);border:2px solid #0f6;border-radius:6px;padding:12px;margin-top:5px;box-shadow:0 0 15px rgba(0,255,102,0.15);}
-    p{font-size:12px;line-height:1.5;color:#ccc;margin:4px 0;} .orange{color:#ff5500;font-weight:bold;}
-    #canvas-container{position:relative;width:100%;height:450px;margin-top:10px;border:3px solid #ff5500;border-radius:8px;box-shadow:0 0 20px rgba(255,85,0,0.2);background:#fff;overflow:hidden;}
-    canvas{display:block;width:100%;height:100%;}
-    #d{position:absolute;top:10px;right:10px;color:#0ff;background:rgba(0,5,15,0.95);padding:12px;border:2px solid #0ff;border-radius:6px;z-index:100;width:240px;display:none;font-size:11px;}
-    .info-btn{position:absolute;top:20px;right:20px;background:#0ff;color:#000;width:30px;height:30px;border-radius:50%;border:none;font-weight:bold;font-size:18px;cursor:pointer;box-shadow:0 0 10px #0ff;text-align:center;line-height:30px;z-index:110;}
-    #sci-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,10,20,0.98);border:2px solid #0ff;border-radius:8px;padding:20px;width:420px;z-index:200;box-shadow:0 0 25px rgba(0,255,255,0.4);color:#fff;}
-    .close-btn{background:#f33;color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;float:right;font-weight:bold;}
-    .hud-left{font-size:11px;color:#fff;background:rgba(0,0,0,0.85);padding:8px;border-radius:4px;border:1px solid #3366ff;margin-top:5px;}
-</style></head><body>
-    <div class="wrap">
-        <button class="info-btn" onclick="openSciInfo()">?</button>
-        <h1>SWIFTSS_SCIENSPLAY_PLATFORM</h1>
-        <p style="text-align:center;color:#888;font-size:10px;margin:0;">🏆 ИНТЕРАКТИВНАЯ ОНЛАЙН-ЛАБОРАТОРИЯ SCIENCEBOX 🏆</p>
-        <div id="canvas-container">
-            <div id="d">
-                <h1 style="color:#0ff;text-align:center;margin-bottom:5px;font-size:12px;">🧬 CELL_DNA_DECODER</h1>
-                <p>КOТ_ID: <span id="d1" style="color:#fff;">0</span></p>
-                <p>ЖГУТИК: <span id="d2" style="color:#0f6;">0</span></p>
-                <p>ШЁРСТЬ: <span id="d3" style="color:#f90;">0</span></p>
-            </div>
-            <canvas id="c"></canvas>
-        </div>
-        <div class="hud-left">
-            <span style="color:#ff5500;font-weight:bold;">УПРАВЛЕНИЕ:</span> [W],[A],[S],[D] — Полёт камеры 🚀 │ [M] — Зум Микроскопа x15 🔬 │ [ПКМ] по коту — Слежка камеры (Зажми [TAB] для ДНК!) 🎥 │ — Спавн клоуна 🤡 │ — Спавн котёнка 🐱🦠 │ [ЛКМ] — Хватить левым кулаком ✊ │ [R] — Сброс лабы
-        </div>
-        <h2>🍊 НАУЧНЫЙ МАНИФЕСТ ИГРЫ</h2>
-        <div class="box" style="border-color:#ff5500;box-shadow:0 0 10px rgba(255,85,0,0.1);">
-            <p>> Этот модуль доказывает, что школьные темы можно изучать весело. Кенты из 6-го класса могут наглядно исследовать клеточный митоз и передачу мутаций ДНК в реальном времени на стабильных <span class="orange">120 FPS</span>!</p>
-        </div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>LAB ESCAPE: CARRION UPDATE</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: monospace; color: #fff; user-select: none; }
+        #c { width: 100vw; height: 100vh; image-rendering: pixelated; filter: contrast(280%) grayscale(100%); }
+        #ui { position: absolute; bottom: 20px; left: 20px; font-size: 16px; background: rgba(0,0,0,0.85); padding: 12px; border: 2px solid #fff; pointer-events: none; z-index: 999; }
+        .danger { color: #f00; animation: blink 0.4s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <canvas id="c"></canvas>
+    
+    <div id="ui">
+        [A][D] — Бег / Сойти с лестницы | [W]/[S] — Лестницы<br>
+        [ЛКМ] — Стрельба по мышке | [Зажать E] — Лечение на корточках<br>
+        <hr>
+        HP: <span id="h">100</span>% | КРОВОТЕЧЕНИЕ: <span id="b">0.0</span>/сек
+        <div id="status"></div>
     </div>
-    <div id="sci-popup"><button class="close-btn" onclick="closeSciInfo()">X</button>
-        <h3 style="color:#0ff;margin-top:0;font-size:14px;">🔬 НАУЧНАЯ СПРАВКА: КЛЕТОЧНЫЙ МИТОЗ</h3>
-        <p style="font-size:12px;color:#ccc;line-height:1.5;margin-top:10px;">> <span style="color:#0ff;font-weight:bold;">Процесс на холсте:</span> Цифровые кошачьи микробы поглощают фито-бактерии и копят ДНК-код. При 100% заполнении шкалы запускается **митоз** — деление клетки надвое с мутацией пушистости и цвета шерсти!</p>
-    </div>
+
     <script>
-        function openSciInfo(){document.getElementById('sci-popup').style.display='block';}
-        function closeSciInfo(){document.getElementById('sci-popup').style.display='none';}
-        const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');let floorY=400;
-        canvas.width=860; canvas.height=450; window.addEventListener('contextmenu',e=>e.preventDefault());
-        let mx=0,my=0,wTime=0,timeScale=1,isSlow=false,zoom=1,hasMicroscope=false,isTabPressed=false;
-        let sSegments=[], food=[], trackedPuz=null, keys={};let pE=['😎','🙂','🤖','😐','🤮'], pSkinIdx=0;
-        let player={x:300,y:200,r:20,lH:{x:0,y:0,fist:false,ang:0},rH:{x:0,y:0,fist:false,ang:0}};
-        function spawnObj(type) {
-            let emo = type===4?'🤡':'🐱🦠';
-            sSegments.push({x:Math.random()*400+200,y:Math.random()*200+100,ox:200,oy:100,vx:0,vy:0,type:type,emoji:emo,grab:'N',r:type===4?18:10,hp:100,id:Date.now()+Math.random(),furDensity:Math.floor(Math.random()*40)+60});
+        const canvas = document.getElementById('c');
+        const ctx = canvas.getContext('2d');
+        const VW = 320; const VH = 180;
+        canvas.width = VW; canvas.height = VH;
+
+        let camY = 0; let mx = 0; let my = 0; let score = 0;
+
+        const p = {
+            x: 60, y: 40, vx: 0, vy: 0,
+            hp: 100, bleed: 0, dead: false,
+            isH: false, isL: false, t: 0,
+            gunAngle: 0, crouchY: 0
+        };
+
+        // Параметры монстра из Carrion
+        let carrionY = -120;
+        const carrionSpeed = 0.09;
+        const tentacles = [];
+        for (let i = 0; i < 8; i++) {
+            tentacles.push({ targetX: Math.random() * VW, currentX: Math.random() * VW, currentY: -120 });
         }
-        for(let i=0;i<6;i++) spawnObj(7);
-        for(let i=0;i<30;i++) food.push({x:Math.random()*1600-800, y:Math.random()*1600-800, r:3});
-        canvas.addEventListener('mousemove',e=>{
-            let rect = canvas.getBoundingClientRect(); let rawX = e.clientX - rect.left; let rawY = e.clientY - rect.top;
-            if(hasMicroscope) { mx = (rawX - canvas.width/2)/0.15 + player.x; my = (rawY - canvas.height/2)/0.15 + player.y; } else { mx = rawX; my = rawY; }
-        });
-        canvas.addEventListener('mousedown',e=>{if(e.button===0) player.lH.fist=true; if(e.button===2){let found = sSegments.find(s=>Math.sqrt((s.x-mx)**2+(s.y-my)**2)<s.r+25);if(found){trackedPuz=found;}else{trackedPuz=null;document.getElementById('d').style.display='none';}}});
-        canvas.addEventListener('mouseup',e=>{if(e.button===0){player.lH.fist=false;sSegments.forEach(s=>{s.grab='N';});}});
-        window.addEventListener('keydown',e=>{
-            let key=e.key.toLowerCase(); keys[key]=true; if(e.key==='Tab'){e.preventDefault(); isTabPressed=true;}
-            if(key==='4')spawnObj(4); if(key==='7')spawnObj(7); if(key==='e'||key==='у'){pSkinIdx=(pSkinIdx+1)%pEmojis.length;} if(key==='q'||key==='й'){isSlow=!isSlow;}
-            if(key==='m'||key==='ь'){hasMicroscope=!hasMicroscope; zoom=hasMicroscope?0.15:1.0;}
-            if(key==='r'||key==='к'){sSegments=[];trackedPuz=null;for(let i=0;i<6;i++) spawnObj(7);}
-        });
-        window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false; if(e.key==='Tab'){isTabPressed=false;document.getElementById('d').style.display='none';}});
-        function limH(b,h,tx,ty){let dx=tx-b.x,dy=ty-b.y,dist=Math.sqrt(dx*dx+dy*dy),mR=60;if(dist>mR){h.x=b.x+(dx/dist)*mR;h.y=b.y+(dy/dist)*mR;}else{h.x=tx;h.y=ty;}}
-        function loop() {
-            timeScale = isSlow ? 0.25 : 1.0; wTime += 0.05 * timeScale;
-            if(food.length<40 && Math.random()>0.95) food.push({x:Math.random()*1600-800, y:Math.random()*1600-800, r:3});
 
-            let fS = 5 * timeScale;
-            if (keys['w']||keys['ц']) player.y -= fS; if (keys['s']||keys['ы']) player.y += fS;
-            if (keys['a']||keys['ф']) player.x -= fS; if (keys['d']||keys['в']) player.x += fS;
+        const platforms = []; const ladders = []; const npcs = []; const bullets = [];
+        const floorH = 110;
 
-            if(trackedPuz) {
-                player.x += (trackedPuz.x - player.x) * 0.1; player.y += (trackedPuz.y - player.y) * 0.1;
-                if(isTabPressed) {
-                    let panel = document.getElementById('d'); panel.style.display = 'block';
-                    document.getElementById('d1').innerText = "ID_" + Math.floor(trackedPuz.id%1000);
-                    document.getElementById('d2').innerText = Math.abs(trackedPuz.vx).toFixed(2) + " усов/к";
-                    document.getElementById('d3').innerText = trackedPuz.furDensity + "% Мягкости";
-                }
+        function genFloor(idx) {
+            const sy = idx * floorH + 90;
+            if (idx % 2 === 0) {
+                platforms.push({ x: 0, y: sy, w: 110, h: 6 }, { x: 170, y: sy, w: 150, h: 6 });
+                ladders.push({ x: 130, y: sy, w: 14, h: floorH });
+            } else {
+                platforms.push({ x: 0, y: sy, w: 160, h: 6 }, { x: 230, y: sy, w: 90, h: 6 });
+                ladders.push({ x: 185, y: sy, w: 14, h: floorH });
+            }
+            if (idx > 0) {
+                npcs.push({ x: 240, y: sy - 18, w: 10, h: 18, dir: -1, lastS: 0, hp: 30, dead: false, t: 0 });
+            }
+        }
+
+        for (let i = 0; i < 10; i++) genFloor(i);
+
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+        window.addEventListener('mousemove', e => {
+            const r = canvas.getBoundingClientRect();
+            mx = ((e.clientX - r.left) / r.width) * VW;
+            my = ((e.clientY - r.top) / r.height) * VH + camY;
+        });
+        window.addEventListener('mousedown', () => {
+            if (!p.dead) {
+                let pY = p.y + 4 + p.crouchY;
+                let a = Math.atan2(my - pY, mx - p.x);
+                bullets.push({ x: p.x + Math.cos(a) * 8, y: pY + Math.sin(a) * 8, vx: Math.cos(a) * 5, vy: Math.sin(a) * 5, type: 0 });
+            }
+        });
+
+        function drawRG(x, y, t, isMoving, isDead, isCrouch, angle, type) {
+            ctx.fillStyle = '#fff';
+            let cY = isCrouch ? 4 : 0;
+            if (isDead) {
+                ctx.fillRect(x + 3, y + 10, 4, 4);
+                ctx.fillRect(x - 2, y + 14, 8, 4);
+                ctx.fillRect(x - 5, y + 16, 4, 2);
+                ctx.fillRect(x + 1, y + 17, 6, 2);
+                return;
+            }
+            ctx.fillRect(x + 3, y + cY, 4, 4);
+            ctx.fillRect(x + 4, y + 4 + cY, 2, 1);
+            ctx.fillRect(x + 2, y + 5 + cY, 6, 6);
+            let wave = isMoving ? Math.sin(t * 0.25) * 3 : 0;
+            if (type === 0) {
+                ctx.save(); ctx.translate(x + 5, y + 7 + cY); ctx.rotate(angle);
+                ctx.fillRect(0, -1, 6, 2); ctx.fillRect(4, 0, 2, 3); ctx.restore();
+            } else {
+                ctx.fillRect(x - 2, y + 7 + cY, 4, 2);
+            }
+            ctx.fillRect(x + 2, y + 11 + (wave > 0 ? 2 : 0), 2, 7 - cY);
+            ctx.fillRect(x + 6, y + 11 + (wave < 0 ? 2 : 0), 2, 7 - cY);
+        }
+        function update() {
+            if (p.y > (platforms.length / 2 - 4) * floorH) {
+                genFloor(platforms.length / 2);
             }
 
-            let tLX=player.lH.fist?mx:player.x-35, tLY=player.lH.fist?my:player.y+10;
-            limH(player,player.lH,tLX,tLY); limH(player,player.rH,mx,my);
+            carrionY += carrionSpeed;
+            if (p.y < carrionY + 10) { p.hp = 0; p.dead = true; }
 
-            sSegments.forEach(s => {
-                if (s.grab === 'N' && player.lH.fist && Math.sqrt((player.lH.x - s.x)**2 + (player.lH.y - s.y)**2) < 25) s.grab = 'L';
-            });
+            if (!p.dead) {
+                p.t++; p.isH = keys['KeyE']; p.crouchY = p.isH ? 4 : 0;
+                
+                // Проверка нахождения внутри триггера лестницы
+                let insideLadder = false;
+                ladders.forEach(l => {
+                    if (p.x + 5 > l.x && p.x < l.x + l.w && p.y + 18 > l.y && p.y < l.y + l.h) insideLadder = true;
+                });
 
-            sSegments.forEach((s, idx) => {
-                if (s.grab === 'L') { s.x = player.lH.x; s.y = player.lH.y; s.vx = s.x - s.ox; s.vy = s.y - s.oy; s.ox = s.x; s.oy = s.y; }
-                else {
-                    let vx = (s.x - s.ox) * 0.95, vy = (s.y - s.oy) * 0.95; s.ox = s.x; s.oy = s.y;
-                    s.x += vx * timeScale; s.y += (vy + 0.35) * timeScale;
-                    if (s.y > floorY + 200) { s.y = floorY + 200; s.oy = s.y; }
-                    if (s.type===7 && Math.random()>0.96) { s.vx += (Math.random()-0.5)*1.5; s.vy += (Math.random()-0.5)*1.5; }
-                    
-                    for(let i=food.length-1; i>=0; i--) {
-                        if(Math.sqrt((s.x-food[i].x)**2 + (food[i].y-s.y)**2) < s.r + 6) { food.splice(i, 1); s.hp += 8; }
+                // ФИКС: Если игрок жмет бег влево/вправо, сбрасываем режим лестницы и даем сойти на пол
+                if (insideLadder && !keys['KeyA'] && !keys['KeyD'] && (keys['KeyW'] || keys['KeyS'])) {
+                    p.isL = true;
+                } else if (!insideLadder) {
+                    p.isL = false;
+                }
+
+                if (p.isH) {
+                    p.vx = 0; if (p.bleed > 0) p.bleed = Math.max(0, p.bleed - 0.04);
+                } else if (p.isL) {
+                    p.vx = 0; p.vy = 0;
+                    if (keys['KeyW']) p.y -= 1.3;
+                    if (keys['KeyS']) p.y += 1.3;
+                } else {
+                    if (keys['KeyA']) { p.vx = -1.6; }
+                    else if (keys['KeyD']) { p.vx = 1.6; }
+                    else p.vx = 0;
+                    p.vy += 0.15; // Гравитация комплекса
+                }
+
+                p.x += p.vx; p.y += p.vy;
+
+                platforms.forEach(plat => {
+                    if (p.x + 8 > plat.x && p.x < plat.x + plat.w && p.y + 18 >= plat.y && p.y + 18 - p.vy <= plat.y + 6) {
+                        p.y = plat.y - 18; p.vy = 0;
+                        if (!keys['KeyW'] && !keys['KeyS']) p.isL = false; // На полу управление возвращается полностью
                     }
-                    
-                    if(s.type===7 && s.hp >= 140) {
-                        s.hp = 100;
-                        sSegments.push({x:s.x+20,y:s.y+20,ox:s.x,oy:s.y,vx:-s.vx,vy:-s.vy,type:7,emoji:'🐱🦠',grab:'N',r:10,hp:100,id:Date.now()+Math.random(),furDensity:Math.floor(Math.random()*40)+60});
+                });
+
+                if (p.bleed > 0) p.hp -= p.bleed * 0.016;
+                if (p.hp <= 0) { p.dead = true; }
+                p.gunAngle = Math.atan2(my - (p.y + 7), mx - (p.x + 5));
+            }
+
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i]; b.x += b.vx; b.y += b.vy;
+                if (b.type === 0) {
+                    npcs.forEach(n => {
+                        if (!n.dead && b.x > n.x && b.x < n.x + 10 && b.y > n.y && b.y < n.y + 18) {
+                            n.hp -= 15; bullets.splice(i, 1);
+                            if (n.hp <= 0) { n.dead = true; score += 100; }
+                        }
+                    });
+                }
+                if (b.y > p.y + 300 || b.y < p.y - 300) bullets.splice(i, 1);
+            }
+
+            npcs.forEach(n => {
+                if (n.dead) return;
+                n.t++; n.x += n.dir * 0.4; if (Math.random() < 0.01) n.dir *= -1;
+                let dist = Math.abs(p.x - n.x);
+                if (dist < 110 && Math.abs(p.y - n.y) < 15 && !p.dead) {
+                    let now = Date.now();
+                    if (now - n.lastS > 1400) {
+                        let a = Math.atan2((p.y+8) - n.y, p.x - n.x);
+                        bullets.push({ x: n.x, y: n.y + 7, vx: Math.cos(a) * 4, vy: Math.sin(a) * 4, type: 1 });
+                        p.hp -= 10; p.bleed += 0.6; n.lastS = now;
                     }
                 }
             });
 
-            ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            if(hasMicroscope) { ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(0.15, 0.15); ctx.translate(-player.x, -player.y); }
-
-            ctx.strokeStyle = "#eeeeee"; ctx.lineWidth = 2;
-            for(let i = -canvas.width; i < canvas.width*3; i += 40) { ctx.beginPath(); ctx.moveTo(i, -canvas.height*2); ctx.lineTo(i, canvas.height*3); ctx.stroke(); }
-
-            ctx.fillStyle = "#44ff44"; food.forEach(f => { ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill(); });
-
-            ctx.font = "24px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            sSegments.forEach(it => { ctx.save(); ctx.translate(it.x, it.y); ctx.fillText(it.emoji, 0, 0); ctx.restore(); });
-
-            ctx.save(); ctx.font = "42px sans-serif"; ctx.fillText(pE[pSkinIdx], player.x, player.y); ctx.restore();
-
-            player.lH.ang = Math.atan2(player.lH.y - player.y, player.lH.x - player.x);
-            ctx.font = "22px sans-serif"; ctx.save(); ctx.translate(player.lH.x, player.lH.y); ctx.rotate(player.lH.ang); ctx.fillText(player.lH.fist?"✊":"✋",0,0); ctx.restore();
-            ctx.save(); ctx.translate(mx, my); ctx.fillText("✋", 0, 0); ctx.restore();
-
-            ctx.restore();
-            requestAnimationFrame(loop);
+            camY += (p.y - VH / 2 - camY) * 0.06;
+            render();
+            requestAnimationFrame(update);
         }
-        loop();
+
+        function render() {
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, VW, VH);
+            ctx.save(); ctx.translate(0, -camY);
+
+            let distToBM = p.y - carrionY;
+            if (distToBM < 70 && !p.dead) ctx.translate((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2);
+
+            ladders.forEach(l => {
+                ctx.fillStyle = '#333'; ctx.fillRect(l.x, l.y, l.w, l.h);
+                ctx.fillStyle = '#fff'; for (let sy = l.y; sy < l.y + l.h; sy += 5) ctx.fillRect(l.x, sy, l.w, 1);
+            });
+
+            ctx.fillStyle = '#fff'; platforms.forEach(plat => ctx.fillRect(plat.x, plat.y, plat.w, plat.h));
+            bullets.forEach(b => { ctx.fillStyle = b.type === 0 ? '#fff' : '#aaa'; ctx.fillRect(b.x, b.y, 2, 2); });
+
+            // Отрисовка Тела Монстра Carrion (Мрачная пульсирующая биомасса)
+            ctx.fillStyle = '#111'; ctx.fillRect(0, -500, VW, carrionY + 500);
+            ctx.fillStyle = '#fff';
+            for (let i = 0; i < VW; i += 4) {
+                let pulseY = carrionY + Math.sin(Date.now() * 0.006 + i) * 4 + Math.cos(Date.now() * 0.002 + i) * 2;
+                ctx.fillRect(i, pulseY, 4, 3);
+            }
+
+            // Живая симуляция извивающихся щупалец Carrion
+            tentacles.forEach((t, idx) => {
+                if (Math.random() < 0.02) { // Щупальца цепляются за случайные точки платформ ниже
+                    t.targetX = Math.random() * VW;
+                }
+                // Плавное шевеление и вытягивание к игроку
+                t.currentX += (t.targetX - t.currentX) * 0.05;
+                t.currentY = carrionY + 25 + Math.sin(Date.now() * 0.005 + idx) * 15;
+
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(idx * (VW / 8) + 10, carrionY);
+                // Рисуем изогнутое щупальце по синусоиде
+                ctx.quadraticCurveTo(t.currentX, (carrionY + t.currentY)/2, t.currentX, t.currentY);
+                ctx.stroke();
+                ctx.fillStyle = '#fff'; ctx.fillRect(t.currentX - 1.5, t.currentY - 1.5, 3, 3); // Кончик нароста
+            });
+
+            npcs.forEach(n => {
+                drawRG(n.x, n.y, n.t, !n.dead, n.dead, false, 0, 1);
+                if (!n.dead) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.beginPath(); ctx.moveTo(n.x+5, n.y+7);
+                    ctx.lineTo(n.x+5+n.dir*80, n.y-10); ctx.lineTo(n.x+5+n.dir*80, n.y+20); ctx.fill();
+                }
+            });
+
+            drawRG(p.x, p.y, p.t, p.vx !== 0, p.dead, p.isH, p.gunAngle, 0);
+            ctx.restore();
+
+            document.getElementById('h').innerText = Math.max(0, Math.ceil(p.hp));
+            document.getElementById('b').innerText = p.bleed.toFixed(1);
+            
+            const st = document.getElementById('status');
+            if (p.dead) st.innerHTML = '<span class="danger">БИОМАССА РАЗОРВАЛА ВАС НА ЧАСТИ. ОБНОВИТЕ СТРАНИЦУ (F5).</span>';
+            else if (p.bleed > 0) st.innerHTML = '<span class="danger">РАНЕНИЕ ОТ ОХРАНЫ! ЗАЖМИТЕ [E] НА КОРТОЧКАХ!</span>';
+            else if (distToBM < 70) st.innerHTML = '<span class="danger">ЩУПАЛЬЦА СВЕРХУ ЦЕПЛЯЮТСЯ ЗА СТЕНЫ! БЕГИТЕ ВНИЗ!</span>';
+            else st.innerHTML = 'Глубина спуска стабильна. Очков: ' + score;
+        }
+
+        update();
     </script>
 </body>
 </html>
